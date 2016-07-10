@@ -3,6 +3,8 @@ import {StatusBar} from "ionic-native";
 import {HomePage} from "./pages/home/home";
 import {Component, ViewChild} from "@angular/core";
 
+import {FIREBASE_PROVIDERS, defaultFirebase} from "angularfire2";
+
 @Component({
   templateUrl: "build/app.html",
 })
@@ -35,4 +37,10 @@ class MyApp {
   }
 }
 
-ionicBootstrap(MyApp);
+ionicBootstrap(MyApp, [FIREBASE_PROVIDERS, defaultFirebase({
+  apiKey: "your-api-key",
+  authDomain: "your-domain",
+  databaseURL: "your-url",
+  storageBucket: "your-storage-bucket",
+})], {
+  });

@@ -1,16 +1,24 @@
 import {Page} from 'ionic-angular';
-
-import { Photo } from '../photo';
-
 import { Camera } from 'ionic-native';
+
+import {AngularFire, FirebaseListObservable} from "angularfire2";
 
 @Page({
   templateUrl: "build/pages/home/home.html"
 })
 export class HomePage {
-  constructor() {}
+  photos: FirebaseListObservable<any[]>;
 
-  photos: Photo[] = [new Photo("http://placehold.it/350x150", 5),new Photo("http://placehold.it/350x151", 6)];
+  constructor(private af: AngularFire) {
+  }
+
+  ngOnInit() {
+    this.getPhotos();
+  }
+
+  getPhotos() {
+    this.photos = this.af.database.list("/photos");
+  }
 
   takePhoto() {
     Camera.getPicture({
@@ -18,18 +26,18 @@ export class HomePage {
       targetHeight: 500,
       targetWidth: 500
     }).then((imageData) => {
-      this.photos.push(new Photo("data:image/jpeg;base64," + imageData,0));
+      this.photos.push({ src: "data:image/jpeg;base64," + imageData, likes: 0 });
     }, (err) => {
       console.log(err);
     });
   }
 
-  deletePhoto(photo){
-    this.photos.splice(this.photos.indexOf(photo), 1);
+  deletePhoto(photoKey: string) {
+    this.photos.remove(photoKey);
   }
 
-  likePhoto(photo){
-    photo.likes++;
+  likePhoto(photoKey: string, newLikes: number) {
+    this.photos.update(photoKey, { likes: newLikes + 1 });
   }
-  
+
 }
